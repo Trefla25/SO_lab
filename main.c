@@ -7,7 +7,7 @@
 #include<sys/stat.h>
 #include<time.h>
 
-# define FS 100 // Field Size 
+# define FS 200 // Field Size 
 # define BS 200 // Buffer Size
 
 typedef struct {
@@ -38,7 +38,8 @@ void getData(int in, myStats *stat, char *numeFisier) {
     stat->lastChange = fileStats.st_mtime;
 
     (S_ISDIR(fileStats.st_mode)) ? strcpy(stat->drUser, "d") : strcpy(stat->drUser, "-");
-    (fileStats.st_mode & S_IRUSR) ? strcat(stat->drUser, "r") : strcat(stat->drUser, "-");
+
+    (fileStats.st_mode & S_IRUSR) ? strcpy(stat->drUser, "r") : strcat(stat->drUser, "-");
     (fileStats.st_mode & S_IWUSR) ? strcat(stat->drUser, "w") : strcat(stat->drUser, "-");
     (fileStats.st_mode & S_IXUSR) ? strcat(stat->drUser, "x") : strcat(stat->drUser, "-");
 
@@ -52,6 +53,49 @@ void getData(int in, myStats *stat, char *numeFisier) {
 
 }
 
+void fPrint(myStat stat, int out) {    // print Stats from file
+    char buffer[BS];
+
+    sprintf(buffer, "Nume fisier: %s\n", stat.numeFisier);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Dimensiune fisier: %d\n", stat.dimensiune);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Inaltime imagine: %d\n", stat.h);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Lungime imagine: %d\n", stat.L);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Identificatorul utilizatorului: %d\n", stat.userId);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Contor de legaturi: %d\n", stat.countLegaturi);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Timpul ultimei modificari: %s", ctime(&stat.lastChange));
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Drepturi de acces user: %s\n", stat.drUser);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Drepturi de acces grup: %s\n", stat.drGrup);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Drepturi de acces altii: %s\n", stat.drOthers);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+}
 
 
 int main(int argc, char **argv){
@@ -76,9 +120,11 @@ int main(int argc, char **argv){
         exit(1);
     }
 
+    getData(in_file, &stats, argv[1]);
+    fPrint(stats, out_file);
+
     close(in_file);
     close(out_file);
-
 
     return 0;
 }
