@@ -39,7 +39,7 @@ void getData(int in, myStats *stat, char *numeFisier) {
 
     (S_ISDIR(fileStats.st_mode)) ? strcpy(stat->drUser, "d") : strcpy(stat->drUser, "-");
 
-    (fileStats.st_mode & S_IRUSR) ? strcpy(stat->drUser, "r") : strcat(stat->drUser, "-");
+    (fileStats.st_mode & S_IRUSR) ? strcat(stat->drUser, "r") : strcat(stat->drUser, "-");
     (fileStats.st_mode & S_IWUSR) ? strcat(stat->drUser, "w") : strcat(stat->drUser, "-");
     (fileStats.st_mode & S_IXUSR) ? strcat(stat->drUser, "x") : strcat(stat->drUser, "-");
 
@@ -125,6 +125,5 @@ int main(int argc, char **argv){
 
     close(in_file);
     close(out_file);
-
     return 0;
 }
