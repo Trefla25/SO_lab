@@ -67,6 +67,52 @@ void getData(int in, myStats *stat, char *numeFisier) {
 
 }
 
+void fPrint(myStat stat, int out) {    // print Stats from file
+    char buffer[BS];
+
+    sprintf(buffer, "Nume fisier: %s\n", stat.numeFisier);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Dimensiune fisier: %d\n", stat.dimensiune);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+     if (stat.h != -1 || stat.L != -1) {
+        sprintf(buffer, "h image: %d\n", stat.h);
+        write(out, buffer, strlen(buffer));
+        strcpy(buffer, "");
+
+        sprintf(buffer, "L image: %d\n", stat.L);
+        write(out, buffer, strlen(buffer));
+        strcpy(buffer, "");
+    }
+
+    sprintf(buffer, "Identificatorul utilizatorului: %d\n", stat.userId);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Contor de legaturi: %d\n", stat.countLegaturi);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Timpul ultimei modificari: %s", ctime(&stat.lastChange));
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Drepturi de acces user: %s\n", stat.drUser);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Drepturi de acces grup: %s\n", stat.drGrup);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+
+    sprintf(buffer, "Drepturi de acces others: %s\n", stat.drOthers);
+    write(out, buffer, strlen(buffer));
+    strcpy(buffer, "");
+}
+
 
 int main(int argc, char **argv){
     myStats stats; 
@@ -96,10 +142,27 @@ int main(int argc, char **argv){
             exit(1);
         }
 
-        // getData();
-        // close(in_file);
-        // close(out_file);
+        if (S_ISREG(fStat.st_mode)) {
+            int in = open(path, O_RDONLY);
+            
+            if (in == -1) {
+                printf("Cant open file!\n");
+                exit(1);
+            }
 
+        getData(in, &stats, dirent->d_name);
+        fPrint(stats, out);
+
+        close(in);
+
+        }
+        else if (S_ISDIR(fStat.st_mode)) {
+            int out = open("statistica.txt", O_WRONLY | O_APPEND);
+
+           //
+        }
+
+        close(out);
     }
 
     closedir(dir);
